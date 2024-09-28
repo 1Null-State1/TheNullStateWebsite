@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Countdown Timer</title>
     <meta property="og:title" content="Countdown Timer">
-    <meta property="og:description" content="A 3-hour countdown timer with soothing music.">
-    <meta property="og:image" content="https://via.placeholder.com/300x200.png?text=Countdown+Timer">
-    <meta property="og:url" content="https://yourwebsite.com/countdown-timer"> <!-- Replace with your actual URL -->
+    <meta property="og:description" content="TheEndOfTheServer.">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1277376690460299355/1289397861515132938/image.png?ex=66f8acd6&is=66f75b56&hm=3f6b9850f77c41cd51c53efb303f5e88d091bffca1a3ebcb7881c876448fe517&">
+    <meta property="og:url" content="https://1null-state1.github.io/TheNullStateWebsite/"> <!-- Replace with your actual URL -->
     <meta property="og:type" content="website">
     <style>
         body {
@@ -23,20 +23,27 @@
             font-size: 48px;
             margin: 20px;
         }
+        #startButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Countdown Timer</h1>
     <div id="countdown">03:00:00</div>
+    <button id="startButton">Start Countdown</button>
     <audio id="audio" loop>
         <source src="https://cdn.discordapp.com/attachments/1277376690460299355/1289396527252639784/Gone_Forever_-_Sad__Emotional_Piano_Song_Instrumental.mp3?ex=66f8ab97&is=66f75a17&hm=91730cc448d6fa1ceb9f522edf9d97d095c0352920e17566b01dbb5a63e64ad6" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     <script>
-        document.getElementById('audio').play();
-        let countdownTime = 3 * 60 * 60;
+        let countdownTime = localStorage.getItem('countdownTime') || (3 * 60 * 60);
         const countdownDisplay = document.getElementById('countdown');
-        const countdownInterval = setInterval(() => {
+        const audio = document.getElementById('audio');
+
+        function updateCountdownDisplay() {
             const hours = Math.floor(countdownTime / 3600);
             const minutes = Math.floor((countdownTime % 3600) / 60);
             const seconds = countdownTime % 60;
@@ -44,14 +51,32 @@
                 String(hours).padStart(2, '0') + ':' +
                 String(minutes).padStart(2, '0') + ':' +
                 String(seconds).padStart(2, '0');
-            if (countdownTime <= 0) {
-                clearInterval(countdownInterval);
-                countdownDisplay.textContent = "Time's up!";
-                document.getElementById('audio').pause();
-            } else {
-                countdownTime--;
-            }
-        }, 1000);
+        }
+
+        function startCountdown() {
+            audio.play().catch(err => {
+                console.error("Audio playback failed: ", err);
+            });
+
+            const countdownInterval = setInterval(() => {
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.textContent = "Time's up!";
+                    audio.pause();
+                } else {
+                    countdownTime--;
+                    localStorage.setItem('countdownTime', countdownTime);
+                    updateCountdownDisplay();
+                }
+            }, 1000);
+        }
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            updateCountdownDisplay();
+            startCountdown();
+        });
+
+        updateCountdownDisplay(); // Initialize display
     </script>
 </body>
 </html>
